@@ -61,6 +61,10 @@
     <input type="color" id="hand_color" value="#ffffff">
   </div>
   <div class="row">
+    <label>Hour Hand</label>
+    <input type="color" id="hour_hand_color" value="#ffffff">
+  </div>
+  <div class="row">
     <label>Hour Numbers</label>
     <input type="color" id="number_color" value="#ffffff">
   </div>
@@ -107,6 +111,13 @@
       <span class="slider"></span>
     </label>
   </div>
+  <div class="row">
+    <label>Show Battery</label>
+    <label class="toggle">
+      <input type="checkbox" id="show_battery" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
 </section>
 
 <button onclick="save()">Save &amp; Close</button>
@@ -119,13 +130,13 @@
     params[k] = decodeURIComponent(v);
   });
 
-  ['bg_color','hand_color','number_color','text_color'].forEach(function(id) {
+  ['bg_color','hand_color','hour_hand_color','number_color','text_color'].forEach(function(id) {
     if (params[id]) {
       var el = document.getElementById(id);
       if (el) el.value = '#' + params[id].replace('#','');
     }
   });
-  ['show_seconds','show_digital','show_date','show_weather','show_steps'].forEach(function(id) {
+  ['show_seconds','show_digital','show_date','show_weather','show_steps','show_battery'].forEach(function(id) {
     if (params[id] !== undefined) {
       var el = document.getElementById(id);
       if (el) el.checked = (params[id] === '1' || params[id] === 'true');
@@ -139,15 +150,17 @@ function colorToHex(val) {
 
 function save() {
   var result = {
-    bg_color:     colorToHex(document.getElementById('bg_color').value),
-    hand_color:   colorToHex(document.getElementById('hand_color').value),
-    number_color: colorToHex(document.getElementById('number_color').value),
-    text_color:   colorToHex(document.getElementById('text_color').value),
-    show_seconds: document.getElementById('show_seconds').checked ? 1 : 0,
-    show_digital: document.getElementById('show_digital').checked ? 1 : 0,
-    show_date:    document.getElementById('show_date').checked    ? 1 : 0,
-    show_weather: document.getElementById('show_weather').checked ? 1 : 0,
-    show_steps:   document.getElementById('show_steps').checked   ? 1 : 0,
+    bg_color:        colorToHex(document.getElementById('bg_color').value),
+    hand_color:      colorToHex(document.getElementById('hand_color').value),
+    hour_hand_color: colorToHex(document.getElementById('hour_hand_color').value),
+    number_color:    colorToHex(document.getElementById('number_color').value),
+    text_color:      colorToHex(document.getElementById('text_color').value),
+    show_seconds:    document.getElementById('show_seconds').checked ? 1 : 0,
+    show_digital:    document.getElementById('show_digital').checked ? 1 : 0,
+    show_date:       document.getElementById('show_date').checked    ? 1 : 0,
+    show_weather:    document.getElementById('show_weather').checked ? 1 : 0,
+    show_steps:      document.getElementById('show_steps').checked   ? 1 : 0,
+    show_battery:    document.getElementById('show_battery').checked ? 1 : 0,
   };
 
   var encoded = encodeURIComponent(JSON.stringify(result));
