@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Analog Watchface Config</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #1a1a2e; color: #eee;
+    padding: 16px; max-width: 420px; margin: 0 auto;
+  }
+  h1 { font-size: 1.3em; margin-bottom: 18px; color: #a0c4ff; text-align: center; }
+  section { background: #16213e; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+  h2 { font-size: 0.85em; text-transform: uppercase; color: #a0c4ff;
+       letter-spacing: 1px; margin-bottom: 12px; }
+  .row { display: flex; align-items: center; justify-content: space-between;
+         padding: 6px 0; border-bottom: 1px solid #0f3460; }
+  .row:last-child { border-bottom: none; }
+  label { font-size: 0.95em; }
+  input[type="color"] {
+    -webkit-appearance: none; border: none; width: 44px; height: 28px;
+    border-radius: 6px; cursor: pointer; background: none; padding: 0;
+  }
+  input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+  input[type="color"]::-webkit-color-swatch { border-radius: 5px; border: 2px solid #555; }
+  .toggle { position: relative; width: 48px; height: 26px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; inset: 0; background: #444; border-radius: 26px;
+    cursor: pointer; transition: .25s;
+  }
+  .slider:before {
+    content: ''; position: absolute; height: 20px; width: 20px;
+    left: 3px; bottom: 3px; background: white; border-radius: 50%;
+    transition: .25s;
+  }
+  input:checked + .slider { background: #4a90e2; }
+  input:checked + .slider:before { transform: translateX(22px); }
+  button {
+    width: 100%; padding: 14px; background: #4a90e2; color: white;
+    border: none; border-radius: 10px; font-size: 1.05em; font-weight: 600;
+    cursor: pointer; margin-top: 6px; letter-spacing: 0.5px;
+  }
+  button:active { background: #357abd; }
+</style>
+</head>
+<body>
+
+<h1>⌚ Watchface Settings</h1>
+
+<section>
+  <h2>Colours</h2>
+  <div class="row">
+    <label>Background</label>
+    <input type="color" id="bg_color" value="#000000">
+  </div>
+  <div class="row">
+    <label>Watch Hands</label>
+    <input type="color" id="hand_color" value="#ffffff">
+  </div>
+  <div class="row">
+    <label>Hour Numbers</label>
+    <input type="color" id="number_color" value="#ffffff">
+  </div>
+  <div class="row">
+    <label>Centre Text</label>
+    <input type="color" id="text_color" value="#ffffff">
+  </div>
+</section>
+
+<section>
+  <h2>Display Options</h2>
+  <div class="row">
+    <label>Show Second Hand</label>
+    <label class="toggle">
+      <input type="checkbox" id="show_seconds" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+  <div class="row">
+    <label>Show Digital Time</label>
+    <label class="toggle">
+      <input type="checkbox" id="show_digital" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+  <div class="row">
+    <label>Show Date</label>
+    <label class="toggle">
+      <input type="checkbox" id="show_date" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+  <div class="row">
+    <label>Show Weather</label>
+    <label class="toggle">
+      <input type="checkbox" id="show_weather" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+  <div class="row">
+    <label>Show Steps</label>
+    <label class="toggle">
+      <input type="checkbox" id="show_steps" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+</section>
+
+<button onclick="save()">Save &amp; Close</button>
+
+<script>
+// ── Load params from query string (sent by JS companion) ──────────────────
+(function() {
+  var params = {};
+  location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(_, k, v) {
+    params[k] = decodeURIComponent(v);
+  });
+
+  ['bg_color','hand_color','number_color','text_color'].forEach(function(id) {
+    if (params[id]) {
+      var el = document.getElementById(id);
+      if (el) el.value = '#' + params[id].replace('#','');
+    }
+  });
+  ['show_seconds','show_digital','show_date','show_weather','show_steps'].forEach(function(id) {
+    if (params[id] !== undefined) {
+      var el = document.getElementById(id);
+      if (el) el.checked = (params[id] === '1' || params[id] === 'true');
+    }
+  });
+})();
+
+function colorToHex(val) {
+  return val.replace('#', '').toUpperCase();
+}
+
+function save() {
+  var result = {
+    bg_color:     colorToHex(document.getElementById('bg_color').value),
+    hand_color:   colorToHex(document.getElementById('hand_color').value),
+    number_color: colorToHex(document.getElementById('number_color').value),
+    text_color:   colorToHex(document.getElementById('text_color').value),
+    show_seconds: document.getElementById('show_seconds').checked ? 1 : 0,
+    show_digital: document.getElementById('show_digital').checked ? 1 : 0,
+    show_date:    document.getElementById('show_date').checked    ? 1 : 0,
+    show_weather: document.getElementById('show_weather').checked ? 1 : 0,
+    show_steps:   document.getElementById('show_steps').checked   ? 1 : 0,
+  };
+
+  var encoded = encodeURIComponent(JSON.stringify(result));
+  if (typeof Pebble !== 'undefined') {
+    Pebble.returnToApp(encoded);
+  } else {
+    // Running in browser for preview
+    alert('Config:\n' + JSON.stringify(result, null, 2));
+  }
+}
+</script>
+</body>
+</html>
