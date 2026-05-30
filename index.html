@@ -151,12 +151,9 @@ function save() {
   };
 
   var encoded = encodeURIComponent(JSON.stringify(result));
-  if (typeof Pebble !== 'undefined') {
-    Pebble.returnToApp(encoded);
-  } else {
-    // Running in browser for preview
-    alert('Config:\n' + JSON.stringify(result, null, 2));
-  }
+  // Redirect to pebblejs://close# to pass data back to the watch companion JS.
+  // This works whether the page is opened via Pebble app or a browser.
+  document.location = 'pebblejs://close#' + encoded;
 }
 </script>
 </body>
